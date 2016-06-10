@@ -17,6 +17,15 @@ public class PlayerMovementScript : MonoBehaviour {
 	void Update () {
         Move();
         Turn();
+
+        if(colorOfPlayer == ColorOfPlayer.blue) //Make sure rotation doesn't go -
+        {
+            if (transform.localEulerAngles.y > 360)
+                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (transform.localEulerAngles.y - 360), transform.localEulerAngles.z);
+            else if (transform.localEulerAngles.y < 0)
+                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (transform.localEulerAngles.y + 360), transform.localEulerAngles.z);
+        }
+
 	}
 
     void Turn()
