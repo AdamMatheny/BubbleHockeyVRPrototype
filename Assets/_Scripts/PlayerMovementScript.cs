@@ -34,11 +34,11 @@ public class PlayerMovementScript : MonoBehaviour {
         {
             if (Input.GetAxis("Horizontal") > .2f) //Rotate Around
             {
-                transform.Rotate(Vector3.up * Time.deltaTime * turningSpeed);
+                transform.Rotate(Vector3.up * Time.deltaTime * turningSpeed * Input.GetAxis("Horizontal"));
             }
             else if (Input.GetAxis("Horizontal") < -.2f)
             {
-                transform.Rotate(Vector3.down * Time.deltaTime * turningSpeed);
+                transform.Rotate(Vector3.down * Time.deltaTime * turningSpeed * Mathf.Abs(Input.GetAxis("Horizontal")));
             }
 
             if(colorOfPlayer == ColorOfPlayer.blue) //Set Turned Around if facing other direction
@@ -94,7 +94,7 @@ public class PlayerMovementScript : MonoBehaviour {
 
     void MoveToPoint(Transform point) //Move toward Waypoint
     {
-        float step = speed * Time.deltaTime;
+        float step = speed * Time.deltaTime * Mathf.Abs(Input.GetAxis("Vertical"));
         transform.position = Vector3.MoveTowards(transform.position, point.position, step);
     }
 

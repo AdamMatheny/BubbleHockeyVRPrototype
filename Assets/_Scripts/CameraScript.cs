@@ -4,13 +4,22 @@ using System.Collections;
 public class CameraScript : MonoBehaviour {
 
     public PlayerMovementScript[] players;
-    public GameObject assignedPlayer;
+    public GameObject assignedPlayer, mCamera, tracker;
     public bool inProcessOfMoving;
-    public float speed, turnSpeed;
+    public float speed, turnSpeed, controlTurnSpeed;
 	
     void Start()
     {
         players = GameObject.FindObjectsOfType<PlayerMovementScript>();
+    }
+
+    void CameraLookAtTracker()
+    {
+        Vector3 targetDir = tracker.transform.position - mCamera.transform.position;
+        float step = 1 * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(mCamera.transform.forward, targetDir, step, 0.0f);
+        //Debug.DrawRay(mCamera.transform.position, newDir, Color.red);
+        mCamera.transform.rotation = Quaternion.LookRotation(newDir);
     }
 	
 	void Update () {
@@ -26,6 +35,14 @@ public class CameraScript : MonoBehaviour {
             }
         }
 
+        tracker.transform.localPosition = new Vector3(Input.GetAxis("Horizontal2"), Input.GetAxis("Vertical2"), tracker.transform.localPosition.z);
+        CameraLookAtTracker();
+
+        /*if (Mathf.Abs(Input.GetAxis("Horizontal2")) > .1f)
+            mCamera.transform.Rotate(Vector2.up * Time.deltaTime * controlTurnSpeed * Input.GetAxis("Horizontal2"));
+        if (Mathf.Abs(Input.GetAxis("Vertical2")) > .1f)
+            mCamera.transform.Rotate(Vector2.left * Time.deltaTime * controlTurnSpeed * Input.GetAxis("Vertical2"));
+            */
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             foreach(PlayerMovementScript player in players)
@@ -92,7 +109,7 @@ public class CameraScript : MonoBehaviour {
         float stepR = turnSpeed * Time.deltaTime;
 
         float angle = Mathf.LerpAngle(transform.localEulerAngles.y, 0, stepR);
-        transform.localEulerAngles = new Vector3(0, angle, 0);
+        transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, angle, transform.localEulerAngles.z);
 
         if ((transform.localPosition.x == 0 && transform.localPosition.z == 0) && (transform.localEulerAngles.y == 0 || transform.localEulerAngles.y == 360))
             inProcessOfMoving = false;
