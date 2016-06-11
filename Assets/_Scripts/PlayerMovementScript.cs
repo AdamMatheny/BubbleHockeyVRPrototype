@@ -18,7 +18,14 @@ public class PlayerMovementScript : MonoBehaviour {
         Move();
         Turn();
 
-        if(colorOfPlayer == ColorOfPlayer.blue) //Make sure rotation doesn't go -
+        Vector3 forwardSpot = transform.TransformDirection(Vector3.forward) * 50;
+
+        if (activePlayer)
+            Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + .3f, transform.position.z), forwardSpot, Color.green);
+        else
+            Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + .3f, transform.position.z), forwardSpot, Color.red);
+
+        if (colorOfPlayer == ColorOfPlayer.blue) //Make sure rotation doesn't go -
         {
             if (transform.localEulerAngles.y > 360)
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (transform.localEulerAngles.y - 360), transform.localEulerAngles.z);
