@@ -7,23 +7,59 @@ public class PlayerMovementScript : MonoBehaviour {
     public enum ColorOfPlayer { red, blue }; public ColorOfPlayer colorOfPlayer;
     public int lastWaypoint, nextWaypoint;
     public Transform[] waypoints; //Set Waypoints for player to move along
-    public float speed, turningSpeed;
-    public bool activePlayer, turnedAround;
+    public float speed, turningSpeed, thrust;
+    public bool activePlayer, turnedAround, hasPuck;
+    public GameObject puck; public Transform puckSpot;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    float lastRightTrigger, lastLeftTrigger;
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Puck")
+        {
+            //other.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            //other.gameObject.transform.parent = gameObject.transform;
+            //other.gameObject.transform.localPosition = puckSpot.localPosition;
+            puck = other.gameObject;
+            hasPuck = true;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Puck")
+            hasPuck = true;
+    }
+
+    void Shoot()
+    {
+        puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
+        puck.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5f));
+        puck.GetComponent<Rigidbody>().AddForce(transform.right * (thrust / 11));
+        //puck.transform.parent = null;
+        puck = null;
+    }
+
 	void Update () {
         Move();
         Turn();
 
-        Vector3 forwardSpot = transform.TransformDirection(Vector3.forward) * 50;
+        Vector3 forwardSpot = puckSpot.transform.TransformDirection(new Vector3((50 / 11), 0, 50));
 
         if (activePlayer)
-            Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + .3f, transform.position.z), forwardSpot, Color.green);
+        {
+            Debug.DrawRay(new Vector3(puckSpot.transform.position.x, puckSpot.transform.position.y + .1f, puckSpot.transform.position.z), forwardSpot, Color.green);
+            if (Input.GetKeyDown(KeyCode.Space) || (Input.GetAxis("RightTrigger") > .3f && lastRightTrigger < .3f))
+            {
+                if (hasPuck)
+                {
+                    hasPuck = false;
+                    Shoot();
+                }
+            }
+        }
         else
-            Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + .3f, transform.position.z), forwardSpot, Color.red);
+            Debug.DrawRay(new Vector3(puckSpot.transform.position.x, puckSpot.transform.position.y + .1f, puckSpot.transform.position.z), forwardSpot, Color.red);
 
         if (colorOfPlayer == ColorOfPlayer.blue) //Make sure rotation doesn't go -
         {
@@ -33,17 +69,25 @@ public class PlayerMovementScript : MonoBehaviour {
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (transform.localEulerAngles.y + 360), transform.localEulerAngles.z);
         }
 
+        lastRightTrigger = Input.GetAxis("RightTrigger");
+        lastLeftTrigger = Input.GetAxis("LeftTrigger");
+
 	}
 
     void Turn()
     {
         if (activePlayer)
         {
-            if (Input.GetAxis("Horizontal") > .2f) //Rotate Around
+            if (Input.GetButton("RightBumper") || Input.GetKeyDown(KeyCode.LeftShift))
+                turningSpeed = 200;
+            else
+                turningSpeed = 800;
+
+            if (Input.GetAxis("Horizontal") > .01f) //Rotate Around
             {
                 transform.Rotate(Vector3.up * Time.deltaTime * turningSpeed * Input.GetAxis("Horizontal"));
             }
-            else if (Input.GetAxis("Horizontal") < -.2f)
+            else if (Input.GetAxis("Horizontal") < -.01f)
             {
                 transform.Rotate(Vector3.down * Time.deltaTime * turningSpeed * Mathf.Abs(Input.GetAxis("Horizontal")));
             }

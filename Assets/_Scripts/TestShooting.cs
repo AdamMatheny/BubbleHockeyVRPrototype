@@ -11,7 +11,7 @@ public class TestShooting : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             objectToShoot.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
-            objectToShoot.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5));
+            objectToShoot.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 2.5f));
         }
 	}
 }
