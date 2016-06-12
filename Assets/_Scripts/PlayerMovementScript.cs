@@ -8,7 +8,7 @@ public class PlayerMovementScript : MonoBehaviour {
     public int lastWaypoint, nextWaypoint;
     public Transform[] waypoints; //Set Waypoints for player to move along
     public float speed, turningSpeed, thrust;
-    public bool activePlayer, turnedAround, hasPuck;
+    public bool activePlayer, turnedAround, hasPuck, keepPuckStill;
     public GameObject puck; public Transform puckSpot;
 
     float lastRightTrigger, lastLeftTrigger;
@@ -20,29 +20,57 @@ public class PlayerMovementScript : MonoBehaviour {
             //other.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
             //other.gameObject.transform.parent = gameObject.transform;
             //other.gameObject.transform.localPosition = puckSpot.localPosition;
-            puck = other.gameObject;
-            hasPuck = true;
+            if (!hasPuck)
+            {
+                keepPuckStill = true;
+                hasPuck = true;
+                puck = other.gameObject;
+
+                Debug.Log("KeepItStill");
+            }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag == "Puck")
-            hasPuck = true;
+        {
+            StartCoroutine(SetHasPuckToFalseInASec());
+            puck = null;
+            keepPuckStill = false;
+        }
     }
 
-    void Shoot()
+    IEnumerator SetHasPuckToFalseInASec()
     {
-        puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
-        puck.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5f));
-        puck.GetComponent<Rigidbody>().AddForce(transform.right * (thrust / 11));
-        //puck.transform.parent = null;
+        yield return new WaitForSeconds(.3f);
+        hasPuck = false;
+    }
+
+    IEnumerator Shoot()
+    {
+        keepPuckStill = false;
+        if(puck != null)
+        {
+            puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
+            puck.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5f));
+            puck.GetComponent<Rigidbody>().AddForce(transform.right * (thrust / 11));
+        }
         puck = null;
+
+        yield return new WaitForSeconds(0);
+        StartCoroutine(SetHasPuckToFalseInASec());
     }
 
 	void Update () {
         Move();
         Turn();
+
+        if (keepPuckStill)
+        {
+            if (puck != null)
+                puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
 
         Vector3 forwardSpot = puckSpot.transform.TransformDirection(new Vector3((50 / 11), 0, 50));
 
@@ -51,10 +79,9 @@ public class PlayerMovementScript : MonoBehaviour {
             Debug.DrawRay(new Vector3(puckSpot.transform.position.x, puckSpot.transform.position.y + .1f, puckSpot.transform.position.z), forwardSpot, Color.green);
             if (Input.GetKeyDown(KeyCode.Space) || (Input.GetAxis("RightTrigger") > .3f && lastRightTrigger < .3f))
             {
-                if (hasPuck)
+                if (hasPuck && puck != null)
                 {
-                    hasPuck = false;
-                    Shoot();
+                    StartCoroutine(Shoot());
                 }
             }
         }
