@@ -3,12 +3,14 @@ using System.Collections;
 
 public class PlayerMovementScript : MonoBehaviour {
 
-    public enum DirectionToMove { forward, back, still }; public DirectionToMove directionToMove; //Should player move forward or back
+    public enum DirectionToMove { forward, back, still }; 
+	public DirectionToMove directionToMove; //Should player move forward or back
     public enum ColorOfPlayer { red, blue }; public ColorOfPlayer colorOfPlayer;
     public int lastWaypoint, nextWaypoint;
     public Transform[] waypoints; //Set Waypoints for player to move along
     public float speed, turningSpeed, thrust;
     public bool activePlayer, turnedAround, hasPuck, keepPuckStill;
+	public bool mAIControlled;
     public GameObject puck; public Transform puckSpot;
 
     float lastRightTrigger, lastLeftTrigger;
@@ -88,7 +90,7 @@ public class PlayerMovementScript : MonoBehaviour {
         else
             Debug.DrawRay(new Vector3(puckSpot.transform.position.x, puckSpot.transform.position.y + .1f, puckSpot.transform.position.z), forwardSpot, Color.red);
 
-        if (colorOfPlayer == ColorOfPlayer.blue) //Make sure rotation doesn't go -
+		if (colorOfPlayer == ColorOfPlayer.red) //Make sure rotation doesn't go -
         {
             if (transform.localEulerAngles.y > 360)
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, (transform.localEulerAngles.y - 360), transform.localEulerAngles.z);
@@ -140,9 +142,11 @@ public class PlayerMovementScript : MonoBehaviour {
         if (activePlayer) //Only move when this player is active (Overwrite w/ AI later)
             GetInputForMovement();
 
+
         switch (directionToMove) //Call MoveToPoint depending on our direction to move
         {
             case DirectionToMove.forward:
+				
                 MoveToPoint(waypoints[nextWaypoint]);
                 break;
             case DirectionToMove.back:
@@ -172,7 +176,15 @@ public class PlayerMovementScript : MonoBehaviour {
 
     void MoveToPoint(Transform point) //Move toward Waypoint
     {
-        float step = speed * Time.deltaTime * Mathf.Abs(Input.GetAxis("Vertical"));
+		float step = 0f;
+		if(mAIControlled)
+		{
+			step = speed * Time.deltaTime;
+		}
+		else if(activePlayer)
+		{
+        	step = speed * Time.deltaTime * Mathf.Abs(Input.GetAxis("Vertical"));
+		}
         transform.position = Vector3.MoveTowards(transform.position, point.position, step);
     }
 

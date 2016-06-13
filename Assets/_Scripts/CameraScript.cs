@@ -47,7 +47,7 @@ public class CameraScript : MonoBehaviour {
         {
             foreach(PlayerMovementScript player in players)
             {
-                if (player.gameObject.name == "BluePlayer1")
+                if (player.gameObject.name == "RedPlayer1")
                     player.activePlayer = true;
                 else
                     player.activePlayer = false;
@@ -57,7 +57,7 @@ public class CameraScript : MonoBehaviour {
         {
             foreach (PlayerMovementScript player in players)
             {
-                if (player.gameObject.name == "BluePlayer2")
+                if (player.gameObject.name == "RedPlayer2")
                     player.activePlayer = true;
                 else
                     player.activePlayer = false;
@@ -67,7 +67,7 @@ public class CameraScript : MonoBehaviour {
         {
             foreach (PlayerMovementScript player in players)
             {
-                if (player.gameObject.name == "BluePlayer3")
+                if (player.gameObject.name == "RedPlayer3")
                     player.activePlayer = true;
                 else
                     player.activePlayer = false;
@@ -77,7 +77,7 @@ public class CameraScript : MonoBehaviour {
         {
             foreach (PlayerMovementScript player in players)
             {
-                if (player.gameObject.name == "BluePlayer4")
+                if (player.gameObject.name == "RedPlayer4")
                     player.activePlayer = true;
                 else
                     player.activePlayer = false;
@@ -87,7 +87,7 @@ public class CameraScript : MonoBehaviour {
         {
             foreach (PlayerMovementScript player in players)
             {
-                if (player.gameObject.name == "BluePlayer5")
+                if (player.gameObject.name == "RedPlayer5")
                     player.activePlayer = true;
                 else
                     player.activePlayer = false;
