@@ -15,21 +15,16 @@ public class PlayerMovementScript : MonoBehaviour {
 
     float lastRightTrigger, lastLeftTrigger;
 
-    void OnTriggerStay(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Puck")
         {
-            //other.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            //other.gameObject.transform.parent = gameObject.transform;
-            //other.gameObject.transform.localPosition = puckSpot.localPosition;
-            if (!hasPuck)
-            {
-                keepPuckStill = true;
-                hasPuck = true;
-                puck = other.gameObject;
-
-                Debug.Log("KeepItStill");
-            }
+            Debug.Log("Collided w/ puck!");
+            hasPuck = true;
+            puck = other.gameObject;
+            puck.transform.position = puckSpot.transform.position;
+            puck.transform.parent = gameObject.transform;
+            puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
     }
 
@@ -37,42 +32,31 @@ public class PlayerMovementScript : MonoBehaviour {
     {
         if (other.gameObject.tag == "Puck")
         {
-            StartCoroutine(SetHasPuckToFalseInASec());
+            Debug.Log("Lost Puck");
+            hasPuck = false;
             puck = null;
-            keepPuckStill = false;
         }
-    }
-
-    IEnumerator SetHasPuckToFalseInASec()
-    {
-        yield return new WaitForSeconds(.3f);
-        hasPuck = false;
     }
 
     IEnumerator Shoot()
     {
-        keepPuckStill = false;
+        //keepPuckStill = false;
         if(puck != null)
         {
+            puck.transform.parent = null;
             puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
             puck.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5f));
             puck.GetComponent<Rigidbody>().AddForce(transform.right * (thrust / 11));
+            puck = null;
+            hasPuck = false;
         }
-        puck = null;
 
         yield return new WaitForSeconds(0);
-        StartCoroutine(SetHasPuckToFalseInASec());
     }
 
 	void Update () {
         Move();
         Turn();
-
-        if (keepPuckStill)
-        {
-            if (puck != null)
-                puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        }
 
         Vector3 forwardSpot = puckSpot.transform.TransformDirection(new Vector3((50 / 11), 0, 50));
 
