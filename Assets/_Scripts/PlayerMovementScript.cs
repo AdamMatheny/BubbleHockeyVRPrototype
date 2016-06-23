@@ -28,15 +28,34 @@ public class PlayerMovementScript : MonoBehaviour {
         }
     }
 
+//	void OnTriggerStay(Collider other)
+//	{
+//		if (other.gameObject.tag == "Puck")
+//		{
+//			Debug.Log("Collided w/ puck!");
+//			hasPuck = true;
+//			puck = other.gameObject;
+//			puck.transform.position = puckSpot.transform.position;
+//			puck.transform.parent = gameObject.transform;
+//			puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
+//		}
+//	}
+
     void OnTriggerExit(Collider other)
     {
         if (other.gameObject.tag == "Puck")
         {
             Debug.Log("Lost Puck");
+			puck.transform.parent = null;
             hasPuck = false;
             puck = null;
         }
     }
+
+	public void PublichShoot()
+	{
+		StartCoroutine(Shoot());
+	}
 
     IEnumerator Shoot()
     {
@@ -44,7 +63,7 @@ public class PlayerMovementScript : MonoBehaviour {
         if(puck != null)
         {
             puck.transform.parent = null;
-            puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust);
+            puck.GetComponent<Rigidbody>().AddForce(transform.forward * thrust*2f);
             puck.GetComponent<Rigidbody>().AddForce(transform.up * (thrust / 5f));
             puck.GetComponent<Rigidbody>().AddForce(transform.right * (thrust / 11));
             puck = null;
