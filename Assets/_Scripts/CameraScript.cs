@@ -3,7 +3,20 @@ using System.Collections;
 
 public class CameraScript : MonoBehaviour {
 
-    public PlayerMovementScript[] players;
+    //FollowPlayer
+
+    public GameObject playerToFollow;
+    public Vector3 positionOffset;
+    public float moveSpeed, rotSpeed;
+
+    void Update()
+    {
+        if(transform.position != (playerToFollow.transform.position + positionOffset))
+        {
+            transform.position = Vector3.Lerp(transform.position, playerToFollow.transform.position + positionOffset, Time.deltaTime * moveSpeed);
+        }
+    }
+    /*public PlayerMovementScript[] players;
     public GameObject assignedPlayer, mCamera, tracker;
     public bool inProcessOfMoving;
     public float speed, turnSpeed, controlTurnSpeed;
@@ -42,7 +55,7 @@ public class CameraScript : MonoBehaviour {
             mCamera.transform.Rotate(Vector2.up * Time.deltaTime * controlTurnSpeed * Input.GetAxis("Horizontal2"));
         if (Mathf.Abs(Input.GetAxis("Vertical2")) > .1f)
             mCamera.transform.Rotate(Vector2.left * Time.deltaTime * controlTurnSpeed * Input.GetAxis("Vertical2"));
-            */
+            //
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             foreach(PlayerMovementScript player in players)
@@ -113,5 +126,5 @@ public class CameraScript : MonoBehaviour {
 
         if ((transform.localPosition.x == 0 && transform.localPosition.z == 0) && (transform.localEulerAngles.y == 0 || transform.localEulerAngles.y == 360))
             inProcessOfMoving = false;
-    }
+    }*/ //Old Not Working For What We Need
 }
